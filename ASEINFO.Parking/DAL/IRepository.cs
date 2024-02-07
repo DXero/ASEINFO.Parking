@@ -1,14 +1,14 @@
 ﻿namespace ASEINFO.Parking.DAL
 {
-    public interface IRepository<T> where T : class
+    public interface IRepository : IDisposable 
     {
-        Task<IEnumerable<T>> GetAll();
-        Task<T?> GetById(int id);
+        Task<IEnumerable<T>> GetAll<T>() where T : class;
+        Task<T?> GetById<T>(int id) where T : class;
 
-        Task<bool> Exists(int id);
+        Task<bool> Exists<T>(int id) where T : class;
 
-        Task<Result> Add(T entity);
-        Task<Result> Update(T entity);
-        Task<Result> Delete(int id);
+        Task<Result> Add<T>(T entity) where T : class;
+        Task<Result> Update<T>(T entity) where T : class;
+        Task<Result> Delete<T>(int id) where T : class;
     }
 }

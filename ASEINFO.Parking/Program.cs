@@ -1,4 +1,5 @@
 
+using ASEINFO.Parking.DAL;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
@@ -19,6 +20,7 @@ namespace ASEINFO.Parking
             builder.Services.AddSwaggerGen();
 
             builder.Services.AddDbContext<AppDbContext>(op => op.UseSqlServer("name=localConnection"));
+            builder.Services.AddSingleton<IRepository, RepositorySQLServer>();
 
             var app = builder.Build();
 

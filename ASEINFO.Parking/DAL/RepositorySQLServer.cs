@@ -5,30 +5,36 @@ using System.Xml.Linq;
 
 namespace ASEINFO.Parking.DAL
 {
-    public class Repository<T> : IRepository<T> where T : class
+    public class RepositorySQLServer : IRepository
     {
-        private readonly AppDbContext _context;
-        public Repository(AppDbContext context)
+        private readonly DbContext _context;
+        public RepositorySQLServer(DbContext context)
         {
             _context = context;
         }
 
-        public async Task<IEnumerable<T>> GetAll()
+        public void Dispose()
+        {
+            if (_context != null)
+                _context.Dispose();
+        }
+
+        public async Task<IEnumerable<T>> GetAll<T>() where T : class
         {
             return await _context.Set<T>().ToListAsync();
         }
 
-        public async Task<T?> GetById(int id)
+        public async Task<T?> GetById<T>(int id) where T : class
         {
             return await _context.Set<T>().FindAsync(id);
         }
 
-        public async Task<bool> Exists(int id)
+        public async Task<bool> Exists<T>(int id) where T : class
         {
             return await _context.Set<T>().FindAsync(id) is null ? false : true;
         }
 
-        public async Task<Result> Add(T entity)
+        public async Task<Result> Add<T>(T entity) where T : class
         {
             try
             {
@@ -49,7 +55,7 @@ namespace ASEINFO.Parking.DAL
             }
         }
 
-        public async Task<Result> Update(T entity)
+        public async Task<Result> Update<T>(T entity) where T : class
         {
             try
             {
@@ -71,7 +77,7 @@ namespace ASEINFO.Parking.DAL
             }
         }
 
-        public async Task<Result> Delete(int id)
+        public async Task<Result> Delete<T>(int id) where T : class
         {
             try
             {

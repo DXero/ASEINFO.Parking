@@ -2,7 +2,7 @@
 {
     public class Result
     {
-        public enum Type { Error = 0, Success = 1, Warning = 2, NotFound = 3};
+        public enum Type { Error = 0, Success = 1, Warning = 2, NotFound = 3, Duplicate = 4};
 
         public Type Code { get; set; }
 

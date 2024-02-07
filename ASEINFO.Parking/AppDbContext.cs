@@ -12,6 +12,8 @@ namespace ASEINFO.Parking
 
         public DbSet<Estancia> Estancias { get; set; }
 
+      
+
         public AppDbContext(DbContextOptions options) : base(options)
         {
             
