@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ASEINFO.Parking.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240207172448_migra0002")]
-    partial class migra0002
+    [Migration("20240207192417_migra0001")]
+    partial class migra0001
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,33 @@ namespace ASEINFO.Parking.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("ASEINFO.Parking.Models.Estancia", b =>
+                {
+                    b.Property<int>("EstanciaId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EstanciaId"));
+
+                    b.Property<bool>("Activo")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("Entrada")
+                        .HasColumnType("datetime");
+
+                    b.Property<DateTime?>("Salida")
+                        .HasColumnType("datetime");
+
+                    b.Property<int>("VehiculoId")
+                        .HasColumnType("int");
+
+                    b.HasKey("EstanciaId");
+
+                    b.HasIndex("VehiculoId");
+
+                    b.ToTable("Estancias");
+                });
 
             modelBuilder.Entity("ASEINFO.Parking.Models.TipoVehiculo", b =>
                 {
@@ -64,7 +91,14 @@ namespace ASEINFO.Parking.Migrations
 
             modelBuilder.Entity("ASEINFO.Parking.Models.Vehiculo", b =>
                 {
-                    b.Property<string>("VehiculoId")
+                    b.Property<int>("VehiculoId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("VehiculoId"));
+
+                    b.Property<string>("Placa")
+                        .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
@@ -73,9 +107,23 @@ namespace ASEINFO.Parking.Migrations
 
                     b.HasKey("VehiculoId");
 
+                    b.HasIndex("Placa")
+                        .IsUnique();
+
                     b.HasIndex("TipoVehiculoId");
 
                     b.ToTable("Vehiculos");
+                });
+
+            modelBuilder.Entity("ASEINFO.Parking.Models.Estancia", b =>
+                {
+                    b.HasOne("ASEINFO.Parking.Models.Vehiculo", "Vehiculo")
+                        .WithMany("Estancias")
+                        .HasForeignKey("VehiculoId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Vehiculo");
                 });
 
             modelBuilder.Entity("ASEINFO.Parking.Models.Vehiculo", b =>
@@ -92,6 +140,11 @@ namespace ASEINFO.Parking.Migrations
             modelBuilder.Entity("ASEINFO.Parking.Models.TipoVehiculo", b =>
                 {
                     b.Navigation("Vehiculos");
+                });
+
+            modelBuilder.Entity("ASEINFO.Parking.Models.Vehiculo", b =>
+                {
+                    b.Navigation("Estancias");
                 });
 #pragma warning restore 612, 618
         }

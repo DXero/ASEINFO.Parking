@@ -39,10 +39,8 @@ namespace ASEINFO.Parking.Migrations
                     b.Property<DateTime?>("Salida")
                         .HasColumnType("datetime");
 
-                    b.Property<string>("VehiculoId")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                    b.Property<int>("VehiculoId")
+                        .HasColumnType("int");
 
                     b.HasKey("EstanciaId");
 
@@ -90,7 +88,14 @@ namespace ASEINFO.Parking.Migrations
 
             modelBuilder.Entity("ASEINFO.Parking.Models.Vehiculo", b =>
                 {
-                    b.Property<string>("VehiculoId")
+                    b.Property<int>("VehiculoId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("VehiculoId"));
+
+                    b.Property<string>("Placa")
+                        .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
@@ -98,6 +103,9 @@ namespace ASEINFO.Parking.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("VehiculoId");
+
+                    b.HasIndex("Placa")
+                        .IsUnique();
 
                     b.HasIndex("TipoVehiculoId");
 

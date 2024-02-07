@@ -27,6 +27,9 @@ namespace ASEINFO.Parking
                     new TipoVehiculo(){TipoVehiculoId = 3, Descripcion="VEHICULOS OFICIALES", Precio=null}
                 ]);
 
+            modelBuilder.Entity<Vehiculo>()
+                .HasIndex(e => e.Placa)
+                .IsUnique();
             
 
             base.OnModelCreating(modelBuilder);

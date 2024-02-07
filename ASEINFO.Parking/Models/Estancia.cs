@@ -29,8 +29,8 @@ namespace ASEINFO.Parking.Models
 
         public bool Activo { get; set; }
 
-        [StringLength(20)]
-        public required String VehiculoId { get; set; }
+        
+        public int VehiculoId { get; set; }
 
         public Vehiculo Vehiculo { get; set; }
     }

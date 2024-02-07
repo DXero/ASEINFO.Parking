@@ -1,12 +1,15 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace ASEINFO.Parking.Models
 {
     public class Vehiculo
     {
-        [Key]
+        public int VehiculoId { get; set; }// Se guarda el numero de placa
+
+
         [StringLength(20, ErrorMessage = "El campo no puede exceder 20 caracteres")]
-        public required String VehiculoId { get; set; }// Se guarda el numero de placa
+        public required String Placa { get; set; }
 
         [Required]
         public int TipoVehiculoId { get; set; }
