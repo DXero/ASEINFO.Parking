@@ -1,4 +1,8 @@
 
+using Microsoft.AspNetCore.Localization;
+using Microsoft.EntityFrameworkCore;
+using System.Globalization;
+
 namespace ASEINFO.Parking
 {
     public class Program
@@ -13,6 +17,8 @@ namespace ASEINFO.Parking
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            builder.Services.AddDbContext<AppDbContext>(op => op.UseSqlServer("name=localConnection"));
 
             var app = builder.Build();
 
