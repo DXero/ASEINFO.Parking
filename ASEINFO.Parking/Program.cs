@@ -19,7 +19,7 @@ namespace ASEINFO.Parking
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            builder.Services.AddDbContext<AppDbContext>(op => op.UseSqlServer("name=localConnection"));
+            builder.Services.AddDbContext<AppDbContext>(op => op.UseSqlServer("name=expressConnection"));
 
             var app = builder.Build();
 

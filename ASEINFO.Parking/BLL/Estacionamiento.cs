@@ -12,13 +12,13 @@ namespace ASEINFO.Parking.BLL
         {
             repository = Factory.GetRepository(context);
         }
-        public async Task<bool/*IEnumerable<Vehiculo>*/> DarDeAltaVehiculoOficial(String placa){
+        public async Task<Vehiculo/*IEnumerable<Vehiculo>*/> DarDeAltaVehiculoOficial(String placa){
 
             //return await repository.GetAll<Vehiculo>();
 
-            var r = await repository.GetById<Vehiculo>(1, ["TipoVehiculo"]);
+            var r = await repository.Get<Vehiculo>(x => x.VehiculoId==1);
 
-            return await repository.Exists<Vehiculo>(x => x.Placa == placa);
+            return r;
             
         }
     }
