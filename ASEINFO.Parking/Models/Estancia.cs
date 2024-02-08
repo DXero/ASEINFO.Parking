@@ -23,11 +23,11 @@ namespace ASEINFO.Parking.Models
 
         [Column(TypeName = "money")]
         public decimal Pago { get {
-                return Minutos is null ? 0 : Minutos * Vehiculo.TipoVehiculo.Precio ?? 0;    
+                return Minutos is null ? (decimal)0 : Minutos * Vehiculo.TipoVehiculo.Precio ?? (decimal)0;    
             }
         }
 
-        public bool Activo { get; set; }
+        public bool Activo { get; set; } = true;
 
         
         public int VehiculoId { get; set; }

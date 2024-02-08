@@ -14,19 +14,96 @@ namespace ASEINFO.Parking.Controllers
         private readonly AppDbContext _context;
         public EstacionamientoController(AppDbContext context)
         {
-            estacionamiento = new Estacionamiento(context);
             _context = context;
+            estacionamiento = new Estacionamiento(context);      
         }
 
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Vehiculo>>> All()
+        [HttpGet("All")]
+        public async Task<ActionResult<List<Estancia>>> Obtener()
         {
-            //var listado = _context.Vehiculos.ToList();
-            var listado = await estacionamiento.DarDeAltaVehiculoOficial("P909505");
-            
-            //var listado = await db.GetAll<Vehiculo>();
-
-            return Ok(listado);
+            return await estacionamiento.Obtener();
         }
+
+        [HttpPost("RegistrarEntrada")]
+        public async Task<ActionResult<String>> RegistrarEntrada(String placa)
+        {
+            var respuesta = await estacionamiento.RegistrarEntrada(placa);
+
+            if(respuesta.Code  == Result.Type.Success)
+            {
+                return Ok(respuesta.Message);
+            }
+            else
+            {
+                return BadRequest(respuesta.Message);
+            }
+        }
+
+        [HttpPost("RegistrarSalida")]
+        public async Task<ActionResult<String>> RegistrarSalida(String placa)
+        {
+            var respuesta = await estacionamiento.RegistrarSalida(placa);
+
+            if (respuesta.Code == Result.Type.Success)
+            {
+                return Ok(respuesta.Message);
+            }
+            else
+            {
+                return BadRequest(respuesta.Message);
+            }
+        }
+
+        [HttpPost("AltaVehiculoOficial")]
+        public async Task<ActionResult<String>> DarAltaVehiculoOficial(String placa)
+        {
+            var respuesta = await estacionamiento.DarDeAltaVehiculoOficial(placa);
+
+            if(respuesta.Code == Result.Type.Success)
+            {
+                return Ok($"Vehiculo Oficia con placa {placa} agregado exitosamente");
+            }
+            else if(respuesta.Code == Result.Type.Duplicate)
+            {
+                return BadRequest($"El vehiculo no pudo ser creado debido a que la placa {placa} ya existe");
+            }
+            else
+            {
+                return Conflict(respuesta.Message);
+            }
+            
+        }
+
+        [HttpPost("AltaVehiculoResidente")]
+        public async Task<ActionResult<String>> DarAltaVehiculoResidente(String placa)
+        {
+            var respuesta = await estacionamiento.DarDeAltaVehiculoResidente(placa);
+
+            if (respuesta.Code == Result.Type.Success)
+            {
+                return Ok($"Vehiculo Residente con placa {placa} agregado exitosamente");
+            }
+            else if (respuesta.Code == Result.Type.Duplicate)
+            {
+                return BadRequest($"El vehiculo no pudo ser creado debido a que la placa {placa} ya existe");
+            }
+            else
+            {
+                return Conflict(respuesta.Message);
+            }
+
+        }
+
+        /*
+         var resultado = await estacionamiento.DarDeAltaVehiculoOficial("P909505");
+            
+  
+            if(resultado.Code == Result.Type.NotFound)
+                return NotFound(resultado.Message);
+            else if(resultado.Code == Result.Type.Error)
+                return BadRequest(resultado.Message);
+
+            return Ok((Vehiculo) resultado.Objeto);
+         */
     }
 }
