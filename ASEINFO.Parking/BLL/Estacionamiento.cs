@@ -1,25 +1,24 @@
 ﻿using ASEINFO.Parking.DAL;
 using ASEINFO.Parking.Models;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace ASEINFO.Parking.BLL
 {
     public class Estacionamiento
     {
-        private readonly IRepository logica;
-        public Estacionamiento(IRepository logica)
+        private readonly IRepository repository;
+        public Estacionamiento(DbContext context)
         {
-            this.logica = logica;
+            repository = Factory.GetRepository(context);
         }
-        public async Task<IEnumerable<Vehiculo>> DarDeAltaVehiculoOficial(String numero){
-            //var context = Repository();
-            /*using(var context = AppDbContext())
-            {
-                return await context.GetAll<Vehiculo>();
-            }*/
-            
+        public async Task<bool/*IEnumerable<Vehiculo>*/> DarDeAltaVehiculoOficial(String placa){
 
-            return await logica.GetAll<Vehiculo>();
+            //return await repository.GetAll<Vehiculo>();
+
+            var r = await repository.GetById<Vehiculo>(1, ["TipoVehiculo"]);
+
+            return await repository.Exists<Vehiculo>(x => x.Placa == placa);
             
         }
     }

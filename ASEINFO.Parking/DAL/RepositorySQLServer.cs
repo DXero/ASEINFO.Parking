@@ -1,6 +1,7 @@
 ﻿
 
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 using System.Xml.Linq;
 
 namespace ASEINFO.Parking.DAL
@@ -24,14 +25,30 @@ namespace ASEINFO.Parking.DAL
             return await _context.Set<T>().ToListAsync();
         }
 
-        public async Task<T?> GetById<T>(int id) where T : class
+        public async Task<T?> GetById<T>(int id, params String[] incluir) where T : class
         {
-            return await _context.Set<T>().FindAsync(id);
+            /*var temp = context.Set<TEntity>().Include(incluir[0]);
+            for (int i = 1; i < incluir.Length; i++)
+            {
+                temp = temp.Include(incluir[i]);
+            }*/
+            if (incluir.Length == 0)
+                return await _context.Set<T>().FindAsync(id);
+            else {
+                var temp = _context.Set<T>().Include(incluir[0]);//.FindAsync(id);
+                for (int i = 1; i < incluir.Length; i++)
+                {
+                    temp = temp.Include(incluir[i]);
+                }
+
+                return await temp.FirstOrDefaultAsync();
+                
+            }
         }
 
-        public async Task<bool> Exists<T>(int id) where T : class
+        public async Task<bool> Exists<T>(Expression<Func<T, bool>> criteria) where T : class
         {
-            return await _context.Set<T>().FindAsync(id) is null ? false : true;
+            return await _context.Set<T>().AnyAsync(criteria);
         }
 
         public async Task<Result> Add<T>(T entity) where T : class

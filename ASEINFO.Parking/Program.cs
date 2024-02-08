@@ -20,7 +20,6 @@ namespace ASEINFO.Parking
             builder.Services.AddSwaggerGen();
 
             builder.Services.AddDbContext<AppDbContext>(op => op.UseSqlServer("name=localConnection"));
-            builder.Services.AddSingleton<IRepository, RepositorySQLServer>();
 
             var app = builder.Build();
 
