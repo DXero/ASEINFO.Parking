@@ -5,6 +5,7 @@ namespace ASEINFO.Parking.DAL
     public interface IRepository : IDisposable 
     {
         Task<Result> GetAll<T>() where T : class;
+        Task<Result> GetAll<T>(Expression<Func<T, bool>> criterio, params String[] incluir) where T : class;
         Task<Result> Get<T>(Expression<Func<T, bool>> criterio, params String[] incluir) where T : class;
 
         Task<bool> Exists<T>(Expression<Func<T, bool>> criterio) where T : class;

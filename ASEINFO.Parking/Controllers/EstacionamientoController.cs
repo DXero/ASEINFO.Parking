@@ -1,5 +1,6 @@
 ﻿using ASEINFO.Parking.BLL;
 using ASEINFO.Parking.DAL;
+using ASEINFO.Parking.DTO;
 using ASEINFO.Parking.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -94,16 +95,20 @@ namespace ASEINFO.Parking.Controllers
 
         }
 
-        /*
-         var resultado = await estacionamiento.DarDeAltaVehiculoOficial("P909505");
-            
-  
-            if(resultado.Code == Result.Type.NotFound)
-                return NotFound(resultado.Message);
-            else if(resultado.Code == Result.Type.Error)
-                return BadRequest(resultado.Message);
 
-            return Ok((Vehiculo) resultado.Objeto);
-         */
+        [HttpGet("PagosResidentes")]
+        public async Task<ActionResult<String>> PagosResidentes()
+        {
+            var respuesta = await estacionamiento.PagosResidentes();
+
+            if (respuesta.Code == Result.Type.Success)
+            {
+                return Ok((List<PagosResidentesDTO>)respuesta.Objeto);
+            }
+            else
+            {
+                return BadRequest(respuesta.Message);
+            }
+        }
     }
 }

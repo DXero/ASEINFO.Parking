@@ -1,7 +1,9 @@
 ﻿using ASEINFO.Parking.DAL;
+using ASEINFO.Parking.DTO;
 using ASEINFO.Parking.Models;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 
 namespace ASEINFO.Parking.BLL
@@ -160,7 +162,46 @@ namespace ASEINFO.Parking.BLL
 
                 return await repository.Add(vehiculo);
             }
+        }
 
+        public async Task<Result> PagosResidentes()
+        {
+            var result = await repository.GetAll<Estancia>(x => x.Activo == true && x.Vehiculo.TipoVehiculoId == (int)Tipo.Residente, ["Vehiculo", "Vehiculo.TipoVehiculo"]);
+
+            if(result.Code == Result.Type.Success)
+            {
+                var lista = (List<Estancia>)result.Objeto;
+
+                var listaDTO = new List<PagosResidentesDTO>();
+
+                foreach (var item in lista)
+                {
+                    listaDTO.Add(new PagosResidentesDTO() { 
+                        Placa = item.Vehiculo.Placa.ToUpper().Trim(),
+                        Minutos = item.Minutos ?? 0,
+                        Pagar = item.Pago
+                    });
+                }
+
+                var listadoAnonimo = listaDTO.GroupBy(p => p.Placa).Select(g => new { Placa = g.Key, Minutos = g.Sum(p => p.Minutos), Pagar = g.Sum(p => p.Pagar) });
+
+                var listadoAgrupado = new List<PagosResidentesDTO>();
+
+                foreach (var item in listadoAnonimo)
+                {
+                    listadoAgrupado.Add(new PagosResidentesDTO()
+                    {
+                        Placa = item.Placa,
+                        Minutos = item.Minutos,
+                        Pagar = item.Pagar
+                    });
+                }
+
+                return new Result() { Code = Result.Type.Success, Message="Listado", Objeto = listadoAgrupado };
+            }
+            
+
+            return result;
         }
     }
 }

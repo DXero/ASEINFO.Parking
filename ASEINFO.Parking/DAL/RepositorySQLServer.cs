@@ -54,6 +54,43 @@ namespace ASEINFO.Parking.DAL
             
         }
 
+        public async Task<Result> GetAll<T>(Expression<Func<T, bool>> criterio, params String[] incluir) where T : class
+        {
+            try
+            {
+                if (incluir.Length == 0)
+                {
+                    return new Result()
+                    {
+                        Code = Result.Type.Success,
+                        Message = "Entidad encontrada",
+                        Objeto = await _context.Set<T>().Where(criterio).ToListAsync()
+                    };
+                }
+                else
+                {
+                    var temp = _context.Set<T>().Include(incluir[0]);
+                    for (int i = 1; i < incluir.Length; i++)
+                    {
+                        temp = temp.Include(incluir[i]);
+                    }
+
+                    return new Result()
+                    {
+                        Code = Result.Type.Success,
+                        Message = "Entidad encontrada con datos relacionados",
+                        Objeto = await temp.Where(criterio).ToListAsync()
+                    };
+                }
+                
+            }
+            catch (Exception ex)
+            {
+                return new Result() { Code = Result.Type.Error, Message = ex.Message };
+            }
+
+        }
+
         // Errores que se pueden producir: La busqueda no existe, Exception
         public async Task<Result> Get<T>(Expression<Func<T, bool>> criterio, params String[] incluir) where T : class
         {
