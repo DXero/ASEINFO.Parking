@@ -19,17 +19,24 @@ namespace ASEINFO.Parking.Controllers
             estacionamiento = new Estacionamiento(context);      
         }
 
-        [HttpGet("All")]
-        public async Task<ActionResult<List<Estancia>>> Obtener()
+        [HttpGet("ListarEstancias")]
+        public async Task<ActionResult<List<EstanciasDTO>>> ListarEstancias()
         {
             return await estacionamiento.ListarEstancias();
+
+        }
+
+        [HttpGet("ListarVehiculos")]
+        public async Task<ActionResult<List<VehiculosDTO>>> ListarVehiculos()
+        {
+            return await estacionamiento.ListarVehiculos();
 
         }
 
         [HttpPost("RegistrarEntrada")]
         public async Task<ActionResult<String>> RegistrarEntrada(String placa)
         {
-            var respuesta = await estacionamiento.RegistrarEntrada(placa);
+            var respuesta = await estacionamiento.RegistrarEntrada(placa.ToUpper().Trim());
 
             if(respuesta.Code  == Result.Type.Success)
             {
@@ -44,7 +51,7 @@ namespace ASEINFO.Parking.Controllers
         [HttpPost("RegistrarSalida")]
         public async Task<ActionResult<String>> RegistrarSalida(String placa)
         {
-            var respuesta = await estacionamiento.RegistrarSalida(placa);
+            var respuesta = await estacionamiento.RegistrarSalida(placa.ToUpper().Trim());
 
             if (respuesta.Code == Result.Type.Success)
             {
@@ -59,15 +66,15 @@ namespace ASEINFO.Parking.Controllers
         [HttpPost("AltaVehiculoOficial")]
         public async Task<ActionResult<String>> DarAltaVehiculoOficial(String placa)
         {
-            var respuesta = await estacionamiento.DarDeAltaVehiculoOficial(placa);
+            var respuesta = await estacionamiento.DarDeAltaVehiculoOficial(placa.ToUpper().Trim());
 
             if(respuesta.Code == Result.Type.Success)
             {
-                return Ok($"Vehiculo Oficia con placa {placa} agregado exitosamente");
+                return Ok($"Vehiculo Oficial con placa {placa.ToUpper().Trim()} agregado exitosamente");
             }
             else if(respuesta.Code == Result.Type.Duplicate)
             {
-                return BadRequest($"El vehiculo no pudo ser creado debido a que la placa {placa} ya existe");
+                return BadRequest($"El vehiculo no pudo ser creado debido a que la placa {placa.ToUpper().Trim()} ya existe");
             }
             else
             {
@@ -79,15 +86,15 @@ namespace ASEINFO.Parking.Controllers
         [HttpPost("AltaVehiculoResidente")]
         public async Task<ActionResult<String>> DarAltaVehiculoResidente(String placa)
         {
-            var respuesta = await estacionamiento.DarDeAltaVehiculoResidente(placa);
+            var respuesta = await estacionamiento.DarDeAltaVehiculoResidente(placa.ToUpper().Trim());
 
             if (respuesta.Code == Result.Type.Success)
             {
-                return Ok($"Vehiculo Residente con placa {placa} agregado exitosamente");
+                return Ok($"Vehiculo Residente con placa {placa.ToUpper().Trim()} agregado exitosamente");
             }
             else if (respuesta.Code == Result.Type.Duplicate)
             {
-                return BadRequest($"El vehiculo no pudo ser creado debido a que la placa {placa} ya existe");
+                return BadRequest($"El vehiculo no pudo ser creado debido a que la placa {placa.ToUpper().Trim()} ya existe");
             }
             else
             {

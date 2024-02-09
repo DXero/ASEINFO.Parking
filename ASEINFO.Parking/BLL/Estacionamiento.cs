@@ -18,7 +18,7 @@ namespace ASEINFO.Parking.BLL
             repository = Factory.GetRepository(context);
         }
 
-        public async Task<List<Estancia>> ListarEstancias()
+        public async Task<List<EstanciasDTO>> ListarEstancias()
         {
             var r = await repository.GetAll<Estancia>(["Vehiculo", "Vehiculo.TipoVehiculo"]);
 
@@ -38,7 +38,26 @@ namespace ASEINFO.Parking.BLL
                 });
             }
 
-            return (List<Estancia>)r.Objeto;
+            return lista;
+        }
+
+        public async Task<List<VehiculosDTO>> ListarVehiculos()
+        {
+            var r = await repository.GetAll<Vehiculo>(["TipoVehiculo"]);
+
+            var lista = new List<VehiculosDTO>();
+
+            foreach (var item in (List<Vehiculo>)r.Objeto)
+            {
+                lista.Add(new VehiculosDTO()
+                {
+                    Placa = item.Placa,
+                    TipoVehiculo = item.TipoVehiculo.Descripcion,
+                    Tarifa = item.TipoVehiculo.Precio ?? 0
+                });
+            }
+
+            return lista;
         }
 
         public async Task<Result> RegistrarEntrada(String placa)
