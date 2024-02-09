@@ -22,7 +22,8 @@ namespace ASEINFO.Parking.Controllers
         [HttpGet("All")]
         public async Task<ActionResult<List<Estancia>>> Obtener()
         {
-            return await estacionamiento.Obtener();
+            return await estacionamiento.ListarEstancias();
+
         }
 
         [HttpPost("RegistrarEntrada")]
@@ -93,6 +94,21 @@ namespace ASEINFO.Parking.Controllers
                 return Conflict(respuesta.Message);
             }
 
+        }
+
+        [HttpPut("ComienzaMes")]
+        public async Task<ActionResult<String>> ComienzaMes()
+        {
+            var respuesta = await estacionamiento.ComienzaMes();
+
+            if (respuesta.Code == Result.Type.Success)
+            {
+                return Ok(respuesta.Message);
+            }
+            else
+            {
+                return BadRequest(respuesta.Message);
+            }
         }
 
 

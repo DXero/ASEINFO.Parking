@@ -18,9 +18,25 @@ namespace ASEINFO.Parking.BLL
             repository = Factory.GetRepository(context);
         }
 
-        public async Task<List<Estancia>> Obtener()
+        public async Task<List<Estancia>> ListarEstancias()
         {
-            var r = await repository.GetAll<Estancia>();
+            var r = await repository.GetAll<Estancia>(["Vehiculo", "Vehiculo.TipoVehiculo"]);
+
+            var lista = new List<EstanciasDTO>();
+
+            foreach(var item in (List<Estancia>)r.Objeto)
+            {
+                lista.Add(new EstanciasDTO()
+                {
+                    Placa = item.Vehiculo.Placa,
+                    TipoVehiculo = item.Vehiculo.TipoVehiculo.Descripcion,
+                    Entrada = item.Entrada,
+                    Salida = item.Salida,
+                    Minutos = item.Minutos,
+                    Pago = item.Pago,
+                    Activo = item.Activo
+                });
+            }
 
             return (List<Estancia>)r.Objeto;
         }
@@ -29,8 +45,8 @@ namespace ASEINFO.Parking.BLL
         {
             var existe = await repository.Exists<Vehiculo>(x => x.Placa.ToUpper().Trim() == placa.ToUpper().Trim());
 
-            Vehiculo vehiculo = null;
-            Estancia estancia = null;
+            Vehiculo? vehiculo = null;
+            Estancia? estancia = null;
 
             if (!existe)
             {
@@ -164,9 +180,39 @@ namespace ASEINFO.Parking.BLL
             }
         }
 
+        public async Task<Result> ComienzaMes()
+        {
+            var result = await repository.GetAll<Estancia>(x => x.Activo == true && x.Salida != null && (x.Vehiculo.TipoVehiculoId == (int)Tipo.Residente || x.Vehiculo.TipoVehiculoId == (int)Tipo.Oficial), ["Vehiculo", "Vehiculo.TipoVehiculo"]);
+
+            if (result.Code != Result.Type.Success)
+                return result;
+
+            var lista = (List<Estancia>)result.Objeto;
+
+            if (lista.Count == 0)
+                return new Result() { Code = Result.Type.NoContent, Message = "No hay estancias pendientes de reiniciar" };
+
+            int cont = 0;
+            int contModified = 0;
+
+            foreach(var item in lista)
+            {
+                item.Activo = false;
+                var r = await repository.Update<Estancia>(item);
+                if(r.Code == Result.Type.Success)
+                    contModified++;
+                cont++;
+            }
+
+            if (cont == 0)
+                return new Result() { Code = Result.Type.Error, Message = "No se modifico ningun estancia" };
+            else
+                return new Result() { Code = Result.Type.Success, Message = $"Se modificaron {contModified} estancias de {cont}" };
+        }
+
         public async Task<Result> PagosResidentes()
         {
-            var result = await repository.GetAll<Estancia>(x => x.Activo == true && x.Vehiculo.TipoVehiculoId == (int)Tipo.Residente, ["Vehiculo", "Vehiculo.TipoVehiculo"]);
+            var result = await repository.GetAll<Estancia>(x => x.Activo == true && x.Salida != null && x.Vehiculo.TipoVehiculoId == (int)Tipo.Residente, ["Vehiculo", "Vehiculo.TipoVehiculo"]);
 
             if(result.Code == Result.Type.Success)
             {

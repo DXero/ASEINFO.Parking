@@ -23,29 +23,48 @@ namespace ASEINFO.Parking.DAL
         }
 
         // Errores que se pueden producir: Listado vacio, Exception
-        public async Task<Result> GetAll<T>() where T : class
+        public async Task<Result> GetAll<T>(params String[] incluir) where T : class
         {
             try
             {
                 var lista = await _context.Set<T>().ToListAsync();
 
-                var resultado = new Result()
-                    {
-                        Objeto = lista
-                    };
+                
 
                 if (lista.Count == 0)
                 {
-                    resultado.Code = Result.Type.NoContent;
-                    resultado.Message = "Listado vacio";
+                    return new Result()
+                    {
+                        Code = Result.Type.NoContent,
+                        Message = "Listado vacio",
+                        Objeto = lista
+                    };
+                }
+
+                if (incluir.Length == 0)
+                {
+                    return new Result()
+                    {
+                        Code = Result.Type.Success,
+                        Message = "Listado con datos",
+                        Objeto = await _context.Set<T>().ToListAsync()
+                    };
                 }
                 else
                 {
-                    resultado.Code= Result.Type.Success;
-                    resultado.Message = "Listado con datos";
-                }
+                    var temp = _context.Set<T>().Include(incluir[0]);
+                    for (int i = 1; i < incluir.Length; i++)
+                    {
+                        temp = temp.Include(incluir[i]);
+                    }
 
-                return resultado;
+                    return new Result()
+                    {
+                        Code = Result.Type.Success,
+                        Message = "Listado con datos con datos relacionados",
+                        Objeto = await temp.ToListAsync()
+                    };
+                }
             }
             catch (Exception ex)
             {
